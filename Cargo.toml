@@ -1,6 +1,8 @@
 [package]
-name = "CuerDatabase"
+name = "cuer_database"
 version = "0.1.0"
 authors = ["Alexander Sopicki <asopicki@gmail.com>"]
 
 [dependencies]
+diesel = { version = "1.0.0", features = ["sqlite"] }
+dotenv = "0.9.0"
