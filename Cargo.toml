@@ -1,0 +1,6 @@
+[package]
+name = "CuerDatabase"
+version = "0.1.0"
+authors = ["Alexander Sopicki <asopicki@gmail.com>"]
+
+[dependencies]
