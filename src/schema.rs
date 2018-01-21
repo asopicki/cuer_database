@@ -29,7 +29,20 @@ table! {
     }
 }
 
+table! {
+	cardindex(rowid) {
+		rowid -> Integer,
+		docid -> Integer,
+		title -> Text,
+		choreographer -> Text,
+		meta -> Text,
+		content -> Text,
+	}
+}
+
 joinable!(playlist_cuecards -> playlists (playlist_id));
 joinable!(playlist_cuecards -> cuecards (cuecard_id));
+joinable!(cardindex -> cuecards(docid));
 
 allow_tables_to_appear_in_same_query!(playlists, playlist_cuecards, cuecards);
+allow_tables_to_appear_in_same_query!(cardindex, cuecards);

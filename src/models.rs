@@ -1,11 +1,12 @@
 use super::schema::cuecards;
 use super::schema::playlists;
 use super::schema::playlist_cuecards;
+use diesel::prelude::*;
 use diesel::{insert_into, replace_into, delete, SqliteConnection, QueryResult, RunQueryDsl,
 	ExpressionMethods};
 
 
-#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug)]
+#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug, Serialize, Deserialize)]
 #[table_name = "cuecards"]
 pub struct Cuecard {
 	pub id: i32,
@@ -54,7 +55,7 @@ impl<'a> NewCuecard<'a> {
 }
 
 
-#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug)]
+#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug, Serialize, Deserialize)]
 #[table_name = "playlists"]
 pub struct Playlist {
 	pub id: i32,
@@ -79,16 +80,18 @@ pub struct NewPlaylist<'a> {
 
 impl<'a> NewPlaylist<'a> {
 	/// Inserts the cuecard into the database, or updates an existing one.
-	pub fn create_or_update(&self, conn: &SqliteConnection) -> QueryResult<usize> {
+	pub fn create_or_update(&self, conn: &SqliteConnection) -> QueryResult<Playlist> {
 		use schema::playlists::dsl::*;
 
 		replace_into(playlists)
 			.values(self)
-			.execute(conn)
+			.execute(conn).unwrap();
+
+		return playlists.filter(uuid.eq(self.uuid)).get_result(conn);
 	}
 }
 
-#[derive(Clone, Queryable, Identifiable, Associations, QueryableByName, Debug)]
+#[derive(Clone, Queryable, Identifiable, Associations, QueryableByName, Debug, Serialize, Deserialize)]
 #[belongs_to(Playlist)]
 #[belongs_to(Cuecard)]
 #[table_name = "playlist_cuecards"]
@@ -119,4 +122,14 @@ impl<'a> NewPlaylistCuecard<'a> {
 		use schema::playlist_cuecards::dsl::*;
 		insert_into(playlist_cuecards).values(self).execute(conn)
 	}
+}
+
+#[derive(Queryable, Debug, Serialize, Deserialize)]
+pub struct Cardindex {
+	pub rowid: i32,
+	pub docid: i32,
+	pub title: String,
+	pub choreographer: String,
+	pub meta: String,
+	pub content: String
 }
