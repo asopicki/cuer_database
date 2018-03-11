@@ -2,7 +2,7 @@ use super::schema::cuecards;
 use super::schema::playlists;
 use super::schema::playlist_cuecards;
 use diesel::prelude::*;
-use diesel::{insert_into, replace_into, delete, SqliteConnection, QueryResult, RunQueryDsl,
+use diesel::{insert_into, delete, update, SqliteConnection, QueryResult, RunQueryDsl,
 	ExpressionMethods};
 
 
@@ -21,9 +21,23 @@ pub struct Cuecard {
 	pub content: String,
 }
 
+#[derive(AsChangeset, Debug)]
+#[table_name = "cuecards"]
+pub struct UpdateCuecard<'a> {
+	pub uuid: &'a str,
+	pub phase: &'a str,
+	pub rhythm: &'a str,
+	pub title: &'a str,
+	pub steplevel: &'a str,
+	pub difficulty: &'a str,
+	pub choreographer: &'a str,
+	pub meta: &'a str,
+	pub content: &'a str,
+}
+
 #[derive(Insertable, AsChangeset, Debug)]
 #[table_name = "cuecards"]
-pub struct NewCuecard<'a> {
+pub struct CuecardData<'a> {
 	pub uuid: &'a str,
 	pub phase: &'a str,
 	pub rhythm: &'a str,
@@ -43,12 +57,17 @@ impl Cuecard {
 	}
 }
 
-impl<'a> NewCuecard<'a> {
+impl<'a> CuecardData<'a> {
+	pub fn update(&self, card: &Cuecard, conn: &SqliteConnection) -> QueryResult<usize> {
+		update(card).set(self).execute(conn)
+	}
+
 	/// Inserts the cuecard into the database, or updates an existing one.
-	pub fn create_or_update(&self, conn: &SqliteConnection) -> QueryResult<usize> {
+	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<usize> {
 		use schema::cuecards::dsl::*;
 
-		replace_into(cuecards)
+
+		insert_into(cuecards)
 			.values(self)
 			.execute(conn)
 	}
@@ -73,17 +92,24 @@ impl Playlist {
 
 #[derive(Insertable, AsChangeset, Debug)]
 #[table_name = "playlists"]
-pub struct NewPlaylist<'a> {
+pub struct PlaylistData<'a> {
 	pub uuid: &'a str,
 	pub name: &'a str,
 }
 
-impl<'a> NewPlaylist<'a> {
+impl<'a> PlaylistData<'a> {
+	pub fn update(&self, playlist: &Playlist, conn: &SqliteConnection) -> QueryResult<Playlist> {
+		use schema::playlists::dsl::*;
+		update(playlist).set(self).execute(conn).unwrap();
+
+		return playlists.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+
 	/// Inserts the cuecard into the database, or updates an existing one.
-	pub fn create_or_update(&self, conn: &SqliteConnection) -> QueryResult<Playlist> {
+	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<Playlist> {
 		use schema::playlists::dsl::*;
 
-		replace_into(playlists)
+		insert_into(playlists)
 			.values(self)
 			.execute(conn).unwrap();
 

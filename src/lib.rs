@@ -3,21 +3,15 @@ extern crate diesel;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde;
-extern crate dotenv;
 
 pub mod schema;
 pub mod models;
 
 use diesel::prelude::*;
-use dotenv::dotenv;
-use std::env;
 use models::{Playlist, Cuecard};
 use diesel::expression::AsExpression;
 
-pub fn establish_connection() -> SqliteConnection {
-	dotenv().ok();
-
-	let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+pub fn establish_connection(database_url: &str) -> SqliteConnection {
 	SqliteConnection::establish(&database_url)
 		.expect(&format!("Error connecting to {}", database_url))
 }
