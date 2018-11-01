@@ -2,6 +2,7 @@
 name = "cuer_database"
 version = "0.2.0"
 authors = ["Alexander Sopicki <asopicki@gmail.com>"]
+edition = "2018"
 
 [dependencies]
 serde = "*"

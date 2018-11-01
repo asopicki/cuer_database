@@ -51,7 +51,7 @@ pub struct CuecardData<'a> {
 
 impl Cuecard {
 	pub fn delete(&self, conn: &SqliteConnection) -> QueryResult<usize> {
-		use schema::cuecards::dsl::*;
+		use crate::schema::cuecards::dsl::*;
 
 		delete(cuecards).filter(id.eq(self.id)).execute(conn)
 	}
@@ -64,7 +64,7 @@ impl<'a> CuecardData<'a> {
 
 	/// Inserts the cuecard into the database, or updates an existing one.
 	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<usize> {
-		use schema::cuecards::dsl::*;
+		use crate::schema::cuecards::dsl::*;
 
 
 		insert_into(cuecards)
@@ -84,7 +84,7 @@ pub struct Playlist {
 
 impl Playlist {
 	pub fn delete(&self, conn: &SqliteConnection) -> QueryResult<usize> {
-		use schema::playlists::dsl::*;
+		use crate::schema::playlists::dsl::*;
 
 		delete(playlists).filter(id.eq(self.id)).execute(conn)
 	}
@@ -99,7 +99,7 @@ pub struct PlaylistData<'a> {
 
 impl<'a> PlaylistData<'a> {
 	pub fn update(&self, playlist: &Playlist, conn: &SqliteConnection) -> QueryResult<Playlist> {
-		use schema::playlists::dsl::*;
+		use crate::schema::playlists::dsl::*;
 		update(playlist).set(self).execute(conn).unwrap();
 
 		return playlists.filter(uuid.eq(self.uuid)).get_result(conn);
@@ -107,7 +107,7 @@ impl<'a> PlaylistData<'a> {
 
 	/// Inserts the cuecard into the database, or updates an existing one.
 	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<Playlist> {
-		use schema::playlists::dsl::*;
+		use crate::schema::playlists::dsl::*;
 
 		insert_into(playlists)
 			.values(self)
@@ -129,7 +129,7 @@ pub struct PlaylistCuecard {
 
 impl PlaylistCuecard {
 	pub fn delete(&self, conn: &SqliteConnection) -> QueryResult<usize> {
-		use schema::playlist_cuecards::dsl::*;
+		use crate::schema::playlist_cuecards::dsl::*;
 
 		delete(playlist_cuecards).filter(id.eq(self.id)).execute(conn)
 	}
@@ -145,7 +145,7 @@ pub struct NewPlaylistCuecard<'a> {
 impl<'a> NewPlaylistCuecard<'a> {
 	/// Inserts the cuecard into the database
 	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<usize> {
-		use schema::playlist_cuecards::dsl::*;
+		use crate::schema::playlist_cuecards::dsl::*;
 		insert_into(playlist_cuecards).values(self).execute(conn)
 	}
 }

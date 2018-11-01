@@ -8,7 +8,7 @@ pub mod schema;
 pub mod models;
 
 use diesel::prelude::*;
-use models::{Playlist, Cuecard};
+use crate::models::{Playlist, Cuecard};
 use diesel::expression::AsExpression;
 
 pub fn establish_connection(database_url: &str) -> SqliteConnection {
@@ -17,13 +17,13 @@ pub fn establish_connection(database_url: &str) -> SqliteConnection {
 }
 
 pub fn playlist_by_uuid(u: &String, connection: &SqliteConnection) -> QueryResult<Playlist> {
-	use schema::playlists::dsl::*;
+	use crate::schema::playlists::dsl::*;
 
 	playlists.filter(uuid.eq(u)).first::<Playlist>(connection)
 }
 
 pub fn cuecard_by_uuid(u: &String, connection: &SqliteConnection) -> QueryResult<Cuecard> {
-	use schema::cuecards::dsl::*;
+	use crate::schema::cuecards::dsl::*;
 
 	cuecards.filter(uuid.eq(u)).first::<Cuecard>(connection)
 }
