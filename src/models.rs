@@ -1,7 +1,12 @@
+#![allow(proc_macro_derive_resolution_fallback)]
 use super::schema::cuecards;
 use super::schema::playlists;
 use super::schema::playlist_cuecards;
-use diesel::prelude::*;
+use super::schema::events;
+use super::schema::tip_cuecards;
+use super::schema::tips;
+use super::schema::programs;
+pub use diesel::prelude::*;
 use diesel::{insert_into, delete, update, SqliteConnection, QueryResult, RunQueryDsl,
 	ExpressionMethods};
 
@@ -49,13 +54,13 @@ pub struct CuecardData<'a> {
 	pub content: &'a str,
 }
 
-impl Cuecard {
+/*impl Cuecard {
 	pub fn delete(&self, conn: &SqliteConnection) -> QueryResult<usize> {
 		use crate::schema::cuecards::dsl::*;
 
 		delete(cuecards).filter(id.eq(self.id)).execute(conn)
 	}
-}
+}*/
 
 impl<'a> CuecardData<'a> {
 	pub fn update(&self, card: &Cuecard, conn: &SqliteConnection) -> QueryResult<usize> {
@@ -74,8 +79,7 @@ impl<'a> CuecardData<'a> {
 }
 
 
-#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug, Serialize, Deserialize)]
-#[table_name = "playlists"]
+#[derive(Clone, Queryable, Identifiable, Debug, Serialize, Deserialize)]
 pub struct Playlist {
 	pub id: i32,
 	pub uuid: String,
@@ -86,9 +90,10 @@ impl Playlist {
 	pub fn delete(&self, conn: &SqliteConnection) -> QueryResult<usize> {
 		use crate::schema::playlists::dsl::*;
 
-		delete(playlists).filter(id.eq(self.id)).execute(conn)
+		delete(playlists.filter(id.eq(self.id))).execute(conn)
 	}
 }
+
 
 #[derive(Insertable, AsChangeset, Debug)]
 #[table_name = "playlists"]
@@ -98,11 +103,11 @@ pub struct PlaylistData<'a> {
 }
 
 impl<'a> PlaylistData<'a> {
-	pub fn update(&self, playlist: &Playlist, conn: &SqliteConnection) -> QueryResult<Playlist> {
+	pub fn update(&self, conn: &SqliteConnection) -> QueryResult<Playlist> {
 		use crate::schema::playlists::dsl::*;
-		update(playlist).set(self).execute(conn).unwrap();
+		update(playlists).set(self).execute(conn).unwrap();
 
-		return playlists.filter(uuid.eq(self.uuid)).get_result(conn);
+		return playlists.filter(uuid.eq(self.uuid.clone())).get_result(conn);
 	}
 
 	/// Inserts the cuecard into the database, or updates an existing one.
@@ -158,4 +163,163 @@ pub struct Cardindex {
 	pub choreographer: String,
 	pub meta: String,
 	pub content: String
+}
+
+#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug, Serialize, Deserialize)]
+#[table_name = "events"]
+pub struct Event {
+	pub id: i32,
+	pub uuid: String,
+	pub name: String,
+	pub date_start: String,
+	pub date_end: String,
+	pub schedule: Option<String>,
+	pub date_created: String,
+	pub date_modified: String
+}
+
+impl Event {
+	pub fn delete(&self, conn: &SqliteConnection) -> QueryResult<usize> {
+		use crate::schema::events::dsl::*;
+
+		delete(events.filter(id.eq(self.id))).execute(conn)
+	}
+}
+
+#[derive(Insertable, AsChangeset, Debug)]
+#[table_name = "events"]
+pub struct EventData<'a> {
+	pub uuid: &'a str,
+	pub name: &'a str,
+	pub date_start: &'a str,
+	pub date_end: &'a str,
+	pub schedule: Option<&'a str>,
+	pub date_created: &'a str,
+	pub date_modified: &'a str
+}
+
+impl<'a> EventData<'a> {
+	pub fn update(&self, conn: &SqliteConnection) -> QueryResult<Event> {
+		use crate::schema::events::dsl::*;
+		update(events).set(self).execute(conn).unwrap();
+
+		return events.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+
+	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<Event> {
+		use crate::schema::events::dsl::*;
+
+		insert_into(events)
+			.values(self)
+			.execute(conn).unwrap();
+
+		return events.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+}
+
+#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug, Serialize, Deserialize)]
+#[table_name = "programs"]
+pub struct Program {
+	pub id: i32,
+	pub uuid: String,
+	pub notes: Option<String>,
+	pub event_id: i32,
+	pub date_created: String,
+	pub date_modified: String
+}
+
+#[derive(Insertable, AsChangeset, Debug)]
+#[table_name = "programs"]
+pub struct ProgramData<'a> {
+	pub uuid: &'a str,
+	pub notes: Option<&'a str>,
+	pub event_id: &'a i32,
+	pub date_created: &'a str,
+	pub date_modified: &'a str
+}
+
+impl<'a> ProgramData<'a> {
+	pub fn update(&self, conn: &SqliteConnection) -> QueryResult<Program> {
+		use crate::schema::programs::dsl::*;
+		update(programs).set(self).execute(conn).unwrap();
+
+		return programs.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+
+	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<Program> {
+		use crate::schema::programs::dsl::*;
+
+		insert_into(programs)
+			.values(self)
+			.execute(conn).unwrap();
+
+		return programs.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+}
+
+#[derive(Clone, Queryable, Identifiable, QueryableByName, Debug, Serialize, Deserialize)]
+#[table_name = "tips"]
+pub struct Tip {
+	pub id: i32,
+	pub uuid: String,
+	pub name: String,
+	pub program_id: i32,
+	pub date_start: String,
+	pub date_end: String
+}
+
+#[derive(Insertable, AsChangeset, Debug)]
+#[table_name = "tips"]
+pub struct TipData<'a> {
+	pub uuid: &'a str,
+	pub name: &'a str,
+	pub program_id: &'a i32,
+	pub date_start: &'a str,
+	pub date_end: &'a str
+}
+
+impl<'a> TipData<'a> {
+	pub fn update(&self, conn: &SqliteConnection) -> QueryResult<Tip> {
+		use crate::schema::tips::dsl::*;
+		update(tips).set(self).execute(conn).unwrap();
+
+		return tips.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+
+	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<Tip> {
+		use crate::schema::tips::dsl::*;
+
+		insert_into(tips)
+			.values(self)
+			.execute(conn).unwrap();
+
+		return tips.filter(uuid.eq(self.uuid)).get_result(conn);
+	}
+}
+
+#[derive(Clone, Queryable, Identifiable, Associations, QueryableByName, Debug, Serialize, Deserialize)]
+#[belongs_to(Tip)]
+#[belongs_to(Cuecard)]
+#[table_name = "tip_cuecards"]
+pub struct TipCuecard {
+	pub id: i32,
+	pub tip_id: i32,
+	pub cuecard_id: i32,
+}
+
+#[derive(Insertable, AsChangeset, Debug)]
+#[table_name = "tip_cuecards"]
+pub struct TipCuecardData<'a> {
+	pub tip_id: &'a i32,
+	pub cuecard_id: &'a i32
+}
+
+impl<'a> TipCuecardData<'a> {
+	pub fn create(&self, conn: &SqliteConnection) -> QueryResult<usize> {
+		use crate::schema::tip_cuecards::dsl::*;
+
+		insert_into(tip_cuecards)
+			.values(self)
+			.execute(conn)
+	}
 }

@@ -7,7 +7,6 @@ CREATE TABLE events (
     date_end TEXT NOT NULL, -- ISO8601 date and time string
     name TEXT NOT NULL,
     schedule TEXT NULL,
-    program_id INTEGER NULL,
     date_created TEXT NOT NULL,
     date_modified TEXT NOT NULL
 );
@@ -16,6 +15,7 @@ CREATE TABLE programs (
     id INTEGER NOT NULL PRIMARY KEY,
     uuid TEXT NOT NULL UNIQUE,
     notes TEXT,
+    event_id INTEGER NOT NULL,
     date_created TEXT NOT NULL,
     date_modified TEXT NOT NULL
 );
