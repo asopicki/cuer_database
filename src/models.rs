@@ -170,9 +170,9 @@ pub struct Cardindex {
 pub struct Event {
 	pub id: i32,
 	pub uuid: String,
-	pub name: String,
 	pub date_start: String,
 	pub date_end: String,
+	pub name: String,
 	pub schedule: Option<String>,
 	pub date_created: String,
 	pub date_modified: String
