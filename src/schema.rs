@@ -137,16 +137,16 @@ table! {
     }
 }
 
- table! {
-	cardindex(rowid) {
-		rowid -> Integer,
-		docid -> Integer,
-		title -> Text,
-		choreographer -> Text,
-		meta -> Text,
-		content -> Text,
-    }
- }
+table! {
+   cardindex(rowid) {
+       rowid -> Integer,
+       docid -> Integer,
+       title -> Text,
+       choreographer -> Text,
+       meta -> Text,
+       content -> Text,
+   }
+}
 
 allow_tables_to_appear_in_same_query!(
     cardindex_content,
