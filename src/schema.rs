@@ -123,6 +123,7 @@ table! {
         id -> Integer,
         tip_id -> Integer,
         cuecard_id -> Integer,
+        sort_order -> Integer,
     }
 }
 

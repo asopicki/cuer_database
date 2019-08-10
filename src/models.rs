@@ -300,6 +300,7 @@ pub struct TipCuecard {
     pub id: i32,
     pub tip_id: i32,
     pub cuecard_id: i32,
+    pub sort_order: i32
 }
 
 #[derive(Insertable, AsChangeset, Debug)]
@@ -307,6 +308,7 @@ pub struct TipCuecard {
 pub struct TipCuecardData<'a> {
     pub tip_id: &'a i32,
     pub cuecard_id: &'a i32,
+    pub sort_order: &'a i32
 }
 
 impl<'a> TipCuecardData<'a> {
