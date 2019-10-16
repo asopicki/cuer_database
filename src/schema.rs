@@ -60,6 +60,8 @@ table! {
         choreographer -> Text,
         meta -> Text,
         content -> Text,
+        karaoke_marks -> Text,
+        music_file -> Text,
     }
 }
 
@@ -138,16 +140,12 @@ table! {
     }
 }
 
-table! {
-   cardindex(rowid) {
-       rowid -> Integer,
-       docid -> Integer,
-       title -> Text,
-       choreographer -> Text,
-       meta -> Text,
-       content -> Text,
-   }
-}
+joinable!(cuecard_tags -> cuecards (cuecard_id));
+joinable!(cuecard_tags -> tags (tag_id));
+joinable!(event_tags -> events (event_id));
+joinable!(event_tags -> tags (tag_id));
+joinable!(tip_cuecards -> cuecards (cuecard_id));
+joinable!(tip_cuecards -> tips (tip_id));
 
 allow_tables_to_appear_in_same_query!(
     cardindex_content,
@@ -166,15 +164,3 @@ allow_tables_to_appear_in_same_query!(
     tip_cuecards,
     tips,
 );
-
-joinable!(playlist_cuecards -> playlists (playlist_id));
-joinable!(playlist_cuecards -> cuecards (cuecard_id));
-joinable!(cardindex -> cuecards(docid));
-joinable!(programs -> events(event_id));
-joinable!(tips -> programs(program_id));
-joinable!(tip_cuecards -> tips(tip_id));
-joinable!(tip_cuecards -> cuecards(cuecard_id));
-joinable!(event_tags -> tags(tag_id));
-joinable!(event_tags -> events(event_id));
-joinable!(cuecard_tags -> tags(tag_id));
-joinable!(cuecard_tags -> cuecards(cuecard_id));

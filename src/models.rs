@@ -24,6 +24,8 @@ pub struct Cuecard {
     pub choreographer: String,
     pub meta: String,
     pub content: String,
+    pub karaoke_marks: String,
+    pub music_file: String
 }
 
 #[derive(AsChangeset, Debug)]
@@ -38,6 +40,8 @@ pub struct UpdateCuecard<'a> {
     pub choreographer: &'a str,
     pub meta: &'a str,
     pub content: &'a str,
+    pub karaoke_marks: &'a str,
+    pub music_file: &'a str
 }
 
 #[derive(Insertable, AsChangeset, Debug)]
@@ -52,6 +56,8 @@ pub struct CuecardData<'a> {
     pub choreographer: &'a str,
     pub meta: &'a str,
     pub content: &'a str,
+    pub karaoke_marks: &'a str,
+    pub music_file: &'a str
 }
 
 /*impl Cuecard {
