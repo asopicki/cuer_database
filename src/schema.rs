@@ -140,6 +140,17 @@ table! {
     }
 }
 
+table! {
+   cardindex(rowid) {
+       rowid -> Integer,
+       docid -> Integer,
+       title -> Text,
+       choreographer -> Text,
+       meta -> Text,
+       content -> Text,
+   }
+}
+
 joinable!(cuecard_tags -> cuecards (cuecard_id));
 joinable!(cuecard_tags -> tags (tag_id));
 joinable!(event_tags -> events (event_id));
